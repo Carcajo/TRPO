@@ -163,4 +163,5 @@
 - **Ресурсы**: 2 разработчика и ящик пива
 
 
-
+# Технологический стэк
+  **Pyhhon 3.10, TensorFlow, aiogram, SpaCy, Pandas, NumPy, PostgreSQL, SQLAlchemy, Git, JIRA, Digital ocean, Docker, Kubernetes, Prometheus, loki.**
