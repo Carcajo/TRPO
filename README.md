@@ -168,4 +168,4 @@
 - Безопасность: защита данных пользователей и истории их запросов.
    
 # Технологический стэк
-  **Pyhhon 3.10, TensorFlow, aiogram, SpaCy, Pandas, NumPy, PostgreSQL, SQLAlchemy, Git, JIRA, Digital ocean, Docker, Kubernetes, Prometheus, loki.**
+  **Pyhhon 3.10, PyTorch, aiogram, SpaCy, Pandas, NumPy, PostgreSQL, SQLAlchemy, Git, JIRA, Digital ocean, Docker, Kubernetes, Prometheus, loki.**
