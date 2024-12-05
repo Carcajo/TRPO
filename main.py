@@ -7,7 +7,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
-
+from io import BytesIO
+from docx import Document
 
 load_dotenv()
 
@@ -61,11 +62,17 @@ async def send_welcome(message: types.Message, state: FSMContext):
     await state.set_state(BotStates.MAIN_MENU)
 
 
+def extract_text_from_docx(file_content):
+    doc = Document(BytesIO(file_content.getvalue()))
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
 
 
 @dp.message_handler(text='Вставить текст', state=BotStates.MAIN_MENU)
 async def request_text(message: types.Message, state: FSMContext):
-    await bot.send_message(chat_id=message.chat.id, text="Пришли текст и я проверю его.", reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(chat_id=message.chat.id, text="Пришли текст или файл и я проверю его.", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(BotStates.WAITING_FOR_TEXT)
 
 
@@ -73,8 +80,23 @@ async def request_text(message: types.Message, state: FSMContext):
 async def analyze_text(message: types.Message, state: FSMContext):
     logging.info(f"Получено сообщение с типом: {message.content_type}")
 
-    logging.info(f"Получен текст: {message.text}")
-    text = message.text
+    if message.text:
+        logging.info(f"Получен текст: {message.text}")
+        text = message.text
+    elif message.document:
+        logging.info(f"Получен документ с именем: {message.document.file_name}")
+        file_id = message.document.file_id
+        file = await bot.get_file(file_id)
+        file_path = file.file_path
+        file_content = await bot.download_file(file_path)  # file_content — это объект BytesIO
+        logging.info(f"Содержимое файла получено, размер: {len(file_content.getvalue())} байт")
+
+        if message.document.file_name.endswith('.docx'):
+            logging.info("Файл .docx, извлекаем текст")
+            text = extract_text_from_docx(file_content)
+        else:
+            logging.info("Не .docx файл, пытаемся декодировать как текст")
+            text = file_content.getvalue().decode('utf-8', errors='ignore')
 
 
 
