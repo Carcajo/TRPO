@@ -98,7 +98,9 @@ async def analyze_text(message: types.Message, state: FSMContext):
             logging.info("Не .docx файл, пытаемся декодировать как текст")
             text = file_content.getvalue().decode('utf-8', errors='ignore')
 
-
+    elif message.forward_from:
+        text = message.forward_from.text if message.forward_from.text else "Пересланное сообщение без текста."
+        logging.info(f"Пересланное сообщение: {text}")
 
     analyzing_message = await message.reply("Идет анализ...")
 
